@@ -13,7 +13,7 @@ get_accented_word() {
 }
 
 get_word_definition() {
-  DOM_WORD_DEFINITION='<p itemprop="description" class="significado textonovo">'
+  DOM_WORD_DEFINITION='<p class="significado textonovo">'
   WORD_DEFINITION=$(curl -s "https://www.dicio.com.br/${WORD_TO_SEARCH}/" | grep "${DOM_WORD_DEFINITION}")
 }
 
@@ -22,8 +22,8 @@ remove_paragraph() {
 }
 
 stylize_tags() {
+  WORD_DEFINITION=$(echo ${WORD_DEFINITION} | sed s/'<span class="cl">'/" \\${COLORS[MAGENTA]}"/g | sed s/']<\/span>'/"]\\${COLORS[WHITE]}"/g)
   WORD_DEFINITION=$(echo ${WORD_DEFINITION} | sed s/'<span class="tag">'/" \\${COLORS[YELLOW]}"/g | sed s/']<\/span>'/"]\\${COLORS[WHITE]}"/g)
-  WORD_DEFINITION="$(echo ${WORD_DEFINITION} | sed s/'<span class="cl">'/"\\${COLORS[MAGENTA]}|"/g | sed s/'<\/span>'/\\"${COLORS[WHITE]} |"/g | awk -F'[|]' '{ print $0}')"
   WORD_DEFINITION=$(echo ${WORD_DEFINITION} | sed s/'<span class="etim">'/\\${COLORS[GRAY]}/g | sed s/'<i>'//g | sed s/'<\/i>).'/").\\${COLORS[WHITE]}"/g)
 }
 
