@@ -1,41 +1,55 @@
-#!/bin/bash
-[[ -z $1 ]] && echo "Por favor, escreva uma palavra para pesquisar no dicionário!" && echo "Uso: dicio-cli [PALAVRA]" && exit
+#!/usr/bin//env bash
+
+#--------------------------------------------------
+# Nome do Script: dicio-cli.
+# Descrição: Busca no dicionário via CLI.
+# Autor: Jeiel Lima Miranda.
+# Versão: 1.0
+# Data de Criação: 25/05/2024
+# Última Modificação: 25/05/2024
+# Uso: dicio-cli PALAVRA
+# Fork:
+#   - Philippus: https://github.com/ludovici-philippus/dicio-cli
+#--------------------------------------------------
+
+
+[[ -z $1 ]] && echo "Por favor, escreva uma palavra para pesquisar >
 
 WORD=$(echo $1 | tr '[:lower:]' '[:upper:]')
 WORD_TO_SEARCH=$(echo $1 | tr '[:upper:]' '[:lower:]')
 
 declare -A COLORS
-COLORS=([YELLOW]='\033[1;33m' [MAGENTA]='\033[1;35m' [BLUE]='\033[0;36m' [WHITE]='\033[1;37m' [GRAY]='\033[0;37m')
+COLORS=([YELLOW]='\033[1;33m' [MAGENTA]='\033[1;35m' [BLUE]='\033[0>
 current_definition=0
 
 get_accented_word() {
-  ACCENTED_WORD=$(curl -s "https://www.dicio.com.br/${WORD_TO_SEARCH}/" | grep '<h2 class="tit-significado">' | awk -F'[>]' '{ print $2 }' | awk -F'[</h2>]' '{ print $1 }')
+  ACCENTED_WORD=$(curl -s "https://www.dicio.com.br/${WORD_TO_SEARC>
 }
 
 get_word_definition() {
-  DOM_WORD_DEFINITION='<p itemprop="description" class="significado textonovo">'
-  WORD_DEFINITION=$(curl -s "https://www.dicio.com.br/${WORD_TO_SEARCH}/" | grep "${DOM_WORD_DEFINITION}")
+  DOM_WORD_DEFINITION='<p class="significado textonovo">'
+  WORD_DEFINITION=$(curl -s "https://www.dicio.com.br/${WORD_TO_SEA>
 }
 
 remove_paragraph() {
-  WORD_DEFINITION=$(echo ${WORD_DEFINITION} | sed s/"${DOM_WORD_DEFINITION}"//g | sed s/'<\/p>'//g | sed s/'<br \/>'//g)
+  WORD_DEFINITION=$(echo ${WORD_DEFINITION} | sed s/"${DOM_WORD_DEF>
 }
 
 stylize_tags() {
-  WORD_DEFINITION=$(echo ${WORD_DEFINITION} | sed s/'<span class="tag">'/" \\${COLORS[YELLOW]}"/g | sed s/']<\/span>'/"]\\${COLORS[WHITE]}"/g)
-  WORD_DEFINITION="$(echo ${WORD_DEFINITION} | sed s/'<span class="cl">'/"\\${COLORS[MAGENTA]}|"/g | sed s/'<\/span>'/\\"${COLORS[WHITE]} |"/g | awk -F'[|]' '{ print $0}')"
-  WORD_DEFINITION=$(echo ${WORD_DEFINITION} | sed s/'<span class="etim">'/\\${COLORS[GRAY]}/g | sed s/'<i>'//g | sed s/'<\/i>).'/").\\${COLORS[WHITE]}"/g)
+  WORD_DEFINITION=$(echo ${WORD_DEFINITION} | sed s/'<span class="c>
+  WORD_DEFINITION=$(echo ${WORD_DEFINITION} | sed s/'<span class="t>
+  WORD_DEFINITION=$(echo ${WORD_DEFINITION} | sed s/'<span class="e>
 }
 
 format_word_definition() {
   remove_paragraph
   stylize_tags
-  DEFINITIONS=$(echo ${WORD_DEFINITION} | sed s/'<span>'/" "/g | sed s/"<\/span>"/" | "/g | awk -F'[|]' '{ print $0 }')
+  DEFINITIONS=$(echo ${WORD_DEFINITION} | sed s/'<span>'/" "/g | se>
 }
 
 print_definitions() {
   current_definition=$((${current_definition}+1))
-  DEFINITION=$(echo ${DEFINITIONS} | awk -v current_definition="$current_definition" -F'[|]' '{ print $current_definition }')
+  DEFINITION=$(echo ${DEFINITIONS} | awk -v current_definition="$cu>
 }
 
 get_accented_word
